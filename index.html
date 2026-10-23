@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Make Money Tycoon 💰</title>
+    <title>머니 메이커 타이쿤 💰</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -74,18 +74,26 @@
                 <div>
                     <h1 class="text-lg font-bold text-white tracking-tight flex items-center gap-2">
                         머니 메이커 타이쿤
-                        <span class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full font-mono">v2.0</span>
+                        <span class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full font-mono">v2.1</span>
                     </h1>
                     <p class="text-xs text-slate-400">자산을 불려 세계 최고의 부자가 되어보세요!</p>
                 </div>
             </div>
 
-            <!-- Save Status Bar -->
+            <!-- User Auth & Save Status Bar -->
             <div class="flex items-center space-x-3 ml-auto">
                 <!-- Sync Status Pill -->
-                <div id="sync-status" class="flex items-center space-x-1.5 text-xs bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg text-slate-400">
+                <div id="sync-status" class="hidden sm:flex items-center space-x-1.5 text-xs bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg text-slate-400">
                     <span id="sync-dot" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                     <span id="sync-text">저장 완료</span>
+                </div>
+
+                <!-- User Account Profile / Login Button -->
+                <div id="user-badge" class="flex items-center space-x-2">
+                    <button onclick="openAuthModal()" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs rounded-lg transition-all shadow-md shadow-indigo-600/30 flex items-center gap-1.5">
+                        <i class="fa-solid fa-user-lock"></i>
+                        <span>로그인 / 회원가입</span>
+                    </button>
                 </div>
 
                 <!-- Manual Save Button -->
@@ -223,11 +231,66 @@
 
     </main>
 
+    <!-- Standalone Auth Modal (Local Storage Based) -->
+    <div id="auth-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="glass-panel max-w-sm w-full p-6 rounded-2xl border border-slate-700 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+            <!-- Close Button -->
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <!-- Modal Header -->
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 rounded-xl bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center text-xl mx-auto mb-2">
+                    <i class="fa-solid fa-user-check"></i>
+                </div>
+                <h3 class="text-lg font-bold text-white">게이머 계정 관리</h3>
+                <p class="text-xs text-slate-400 mt-0.5">아이디와 비밀번호로 데이터를 안전하게 저장하세요</p>
+            </div>
+
+            <!-- Auth Mode Switcher -->
+            <div class="flex bg-slate-900 p-1 rounded-xl mb-4 border border-slate-800">
+                <button id="auth-tab-login" onclick="switchAuthTab('login')" class="flex-1 py-2 text-xs font-bold rounded-lg bg-indigo-600 text-white transition">로그인</button>
+                <button id="auth-tab-register" onclick="switchAuthTab('register')" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-slate-200 transition">회원가입</button>
+            </div>
+
+            <!-- Form -->
+            <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-3">
+                <div>
+                    <label class="text-[11px] font-semibold text-slate-400 block mb-1">아이디 (Username)</label>
+                    <input type="text" id="auth-username" required placeholder="영문/한글/숫자 2자 이상" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 transition">
+                </div>
+                <div>
+                    <label class="text-[11px] font-semibold text-slate-400 block mb-1">비밀번호 (Password)</label>
+                    <input type="password" id="auth-password" required placeholder="4자 이상 입력" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 transition">
+                </div>
+
+                <div id="auth-error-box" class="text-xs text-rose-400 bg-rose-500/10 border border-rose-500/20 p-2.5 rounded-lg hidden"></div>
+
+                <button type="submit" id="auth-submit-btn" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl transition shadow-lg shadow-indigo-600/30 mt-2">
+                    로그인하기
+                </button>
+            </form>
+
+            <div class="relative my-4">
+                <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-800"></div></div>
+                <div class="relative flex justify-center text-[10px] uppercase"><span class="bg-slate-900 px-2 text-slate-500">또는</span></div>
+            </div>
+
+            <!-- Guest Mode Play Button -->
+            <button onclick="playAsGuest()" class="w-full py-2 border border-slate-700 hover:bg-slate-800 text-slate-300 font-semibold text-xs rounded-xl transition">
+                게스트(임시) 모드로 플레이
+            </button>
+        </div>
+    </div>
+
     <!-- Notification Toast Container -->
     <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
 
-    <!-- Main Game Script -->
+    <!-- Main Game & Auth Script -->
     <script>
+        let currentUser = null; // Currently logged in username (null = guest)
+        let currentAuthMode = 'login';
         let buyMultiplier = 1;
 
         // Sound Audio Synth Effects (Native Web Audio API)
@@ -258,39 +321,187 @@
             } catch (e) { console.log(e); }
         }
 
-        // --- Game Core State ---
-        window.gameState = {
-            money: 0,
-            totalEarned: 0,
-            clicks: 0,
-            clickPower: 1,
-            trophies: 0,
-            multiplier: 1,
-            businesses: [
-                { id: 'lemonade', name: '레몬에이드 가판대', icon: '🍋', baseCost: 15, count: 0, baseIncome: 1 },
-                { id: 'foodtruck', name: '푸드 트럭', icon: '🚚', baseCost: 100, count: 0, baseIncome: 8 },
-                { id: 'cafe', name: '프랜차이즈 카페', icon: '☕', baseCost: 1100, count: 0, baseIncome: 47 },
-                { id: 'tech', name: 'IT 스타트업', icon: '💻', baseCost: 12000, count: 0, baseIncome: 260 },
-                { id: 'realestate', name: '강남 빌딩 임대', icon: '🏢', baseCost: 130000, count: 0, baseIncome: 1400 },
-                { id: 'bank', name: '민간 투자 은행', icon: '🏦', baseCost: 1400000, count: 0, baseIncome: 7800 },
-                { id: 'crypto_ex', name: '가상화폐 거래소', icon: '🪙', baseCost: 20000000, count: 0, baseIncome: 44000 },
-                { id: 'spacex', name: '우주 자원 채굴', icon: '🚀', baseCost: 330000000, count: 0, baseIncome: 260000 }
-            ],
-            upgrades: [
-                { id: 'up1', name: '손가락 단련', icon: '👆', cost: 50, power: 1, bought: false },
-                { id: 'up2', name: '황금 마우스', icon: '🖱️', cost: 500, power: 5, bought: false },
-                { id: 'up3', name: '매크로 장갑', icon: '🧤', cost: 5000, power: 25, bought: false },
-                { id: 'up4', name: '광속 클릭 디바이스', icon: '⚡', cost: 50000, power: 150, bought: false },
-                { id: 'up5', name: '양자 클릭 인터페이스', icon: '⚛️', cost: 1000000, power: 2000, bought: false }
-            ],
-            stocks: [
-                { id: 'stk_tech', name: '네오 테크', icon: '📈', price: 100, owned: 0, history: [100] },
-                { id: 'stk_bio', name: '바이오 큐어', icon: '🧬', price: 500, owned: 0, history: [500] },
-                { id: 'stk_coin', name: '비트 코인', icon: '🪙', price: 2500, owned: 0, history: [2500] }
-            ]
+        // --- Default Game Core State Template ---
+        function getDefaultState() {
+            return {
+                money: 0,
+                totalEarned: 0,
+                clicks: 0,
+                clickPower: 1,
+                trophies: 0,
+                multiplier: 1,
+                businesses: [
+                    { id: 'lemonade', name: '레몬에이드 가판대', icon: '🍋', baseCost: 15, count: 0, baseIncome: 1 },
+                    { id: 'foodtruck', name: '푸드 트럭', icon: '🚚', baseCost: 100, count: 0, baseIncome: 8 },
+                    { id: 'cafe', name: '프랜차이즈 카페', icon: '☕', baseCost: 1100, count: 0, baseIncome: 47 },
+                    { id: 'tech', name: 'IT 스타트업', icon: '💻', baseCost: 12000, count: 0, baseIncome: 260 },
+                    { id: 'realestate', name: '강남 빌딩 임대', icon: '🏢', baseCost: 130000, count: 0, baseIncome: 1400 },
+                    { id: 'bank', name: '민간 투자 은행', icon: '🏦', baseCost: 1400000, count: 0, baseIncome: 7800 },
+                    { id: 'crypto_ex', name: '가상화폐 거래소', icon: '🪙', baseCost: 20000000, count: 0, baseIncome: 44000 },
+                    { id: 'spacex', name: '우주 자원 채굴', icon: '🚀', baseCost: 330000000, count: 0, baseIncome: 260000 }
+                ],
+                upgrades: [
+                    { id: 'up1', name: '손가락 단련', icon: '👆', cost: 50, power: 1, bought: false },
+                    { id: 'up2', name: '황금 마우스', icon: '🖱️', cost: 500, power: 5, bought: false },
+                    { id: 'up3', name: '매크로 장갑', icon: '🧤', cost: 5000, power: 25, bought: false },
+                    { id: 'up4', name: '광속 클릭 디바이스', icon: '⚡', cost: 50000, power: 150, bought: false },
+                    { id: 'up5', name: '양자 클릭 인터페이스', icon: '⚛️', cost: 1000000, power: 2000, bought: false }
+                ],
+                stocks: [
+                    { id: 'stk_tech', name: '네오 테크', icon: '📈', price: 100, owned: 0, history: [100] },
+                    { id: 'stk_bio', name: '바이오 큐어', icon: '🧬', price: 500, owned: 0, history: [500] },
+                    { id: 'stk_coin', name: '비트 코인', icon: '🪙', price: 2500, owned: 0, history: [2500] }
+                ]
+            };
+        }
+
+        window.gameState = getDefaultState();
+
+        // --- Local Storage User Database Helpers ---
+        function getUsersDB() {
+            try {
+                return JSON.parse(localStorage.getItem('tycoon_users_db')) || {};
+            } catch (e) {
+                return {};
+            }
+        }
+
+        function saveUsersDB(db) {
+            localStorage.setItem('tycoon_users_db', JSON.stringify(db));
+        }
+
+        // Modal Controls & Auth Logic
+        window.openAuthModal = function() {
+            document.getElementById('auth-modal').classList.remove('hidden');
+        };
+        window.closeAuthModal = function() {
+            document.getElementById('auth-modal').classList.add('hidden');
         };
 
-        // Save & Load using LocalStorage
+        window.switchAuthTab = function(mode) {
+            currentAuthMode = mode;
+            const loginBtn = document.getElementById('auth-tab-login');
+            const regBtn = document.getElementById('auth-tab-register');
+            const submitBtn = document.getElementById('auth-submit-btn');
+
+            if (mode === 'login') {
+                loginBtn.className = 'flex-1 py-2 text-xs font-bold rounded-lg bg-indigo-600 text-white transition';
+                regBtn.className = 'flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-slate-200 transition';
+                submitBtn.innerText = '로그인하기';
+            } else {
+                regBtn.className = 'flex-1 py-2 text-xs font-bold rounded-lg bg-indigo-600 text-white transition';
+                loginBtn.className = 'flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-slate-200 transition';
+                submitBtn.innerText = '신규 회원가입하기';
+            }
+            document.getElementById('auth-error-box').classList.add('hidden');
+        };
+
+        window.handleAuthSubmit = function(e) {
+            e.preventDefault();
+            const username = document.getElementById('auth-username').value.trim();
+            const password = document.getElementById('auth-password').value.trim();
+            const errorBox = document.getElementById('auth-error-box');
+
+            errorBox.classList.add('hidden');
+
+            if (username.length < 2) {
+                errorBox.innerText = '아이디는 2자 이상 입력해야 합니다.';
+                errorBox.classList.remove('hidden');
+                return;
+            }
+            if (password.length < 4) {
+                errorBox.innerText = '비밀번호는 4자 이상 입력해야 합니다.';
+                errorBox.classList.remove('hidden');
+                return;
+            }
+
+            const db = getUsersDB();
+
+            if (currentAuthMode === 'register') {
+                if (db[username]) {
+                    errorBox.innerText = '이미 존재하는 아이디입니다. 다른 아이디를 사용해주세요.';
+                    errorBox.classList.remove('hidden');
+                    return;
+                }
+                // Save new user
+                db[username] = {
+                    password: password,
+                    saveState: null
+                };
+                saveUsersDB(db);
+                currentUser = username;
+                localStorage.setItem('tycoon_last_user', username);
+                showToast(`🎉 ${username}님, 회원가입 완료! 데이터가 이 계정에 저장됩니다.`);
+                closeAuthModal();
+                updateUserUI();
+                saveToStorage();
+            } else { // Login Mode
+                if (!db[username]) {
+                    errorBox.innerText = '존재하지 않는 아이디입니다.';
+                    errorBox.classList.remove('hidden');
+                    return;
+                }
+                if (db[username].password !== password) {
+                    errorBox.innerText = '비밀번호가 올바르지 않습니다.';
+                    errorBox.classList.remove('hidden');
+                    return;
+                }
+                // Save current state of previous user before switching
+                saveToStorage();
+                
+                currentUser = username;
+                localStorage.setItem('tycoon_last_user', username);
+                showToast(`🔓 ${username}님으로 로그인되었습니다.`);
+                closeAuthModal();
+                updateUserUI();
+                loadFromStorage();
+            }
+
+            // Clear inputs
+            document.getElementById('auth-username').value = '';
+            document.getElementById('auth-password').value = '';
+        };
+
+        window.handleLogout = function() {
+            saveToStorage();
+            currentUser = null;
+            localStorage.removeItem('tycoon_last_user');
+            showToast('로그아웃 되었습니다. 게스트 모드로 전환됩니다.');
+            updateUserUI();
+            loadFromStorage();
+        };
+
+        window.playAsGuest = function() {
+            closeAuthModal();
+            showToast('게스트(임시) 모드로 플레이합니다.');
+        };
+
+        function updateUserUI() {
+            const badge = document.getElementById('user-badge');
+            if (!badge) return;
+
+            if (currentUser) {
+                badge.innerHTML = `
+                    <div class="flex items-center space-x-2 bg-slate-900 border border-indigo-500/40 px-3 py-1.5 rounded-lg text-xs">
+                        <span class="text-indigo-300 font-bold flex items-center gap-1.5">
+                            <i class="fa-solid fa-user-check text-emerald-400"></i> ${currentUser}
+                        </span>
+                        <button onclick="handleLogout()" class="text-slate-400 hover:text-rose-400 ml-1 transition" title="로그아웃">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </button>
+                    </div>
+                `;
+            } else {
+                badge.innerHTML = `
+                    <button onclick="openAuthModal()" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs rounded-lg transition shadow-md shadow-indigo-600/30 flex items-center gap-1.5">
+                        <i class="fa-solid fa-user-lock"></i>
+                        <span>로그인 / 회원가입</span>
+                    </button>
+                `;
+            }
+        }
+
+        // Save & Load Functionality
         function saveToStorage() {
             setSyncState('saving', '저장 중...');
             try {
@@ -306,7 +517,16 @@
                     stocks: gameState.stocks.map(s => ({ id: s.id, owned: s.owned })),
                     lastSaved: Date.now()
                 };
-                localStorage.setItem('tycoon_saveState', JSON.stringify(saveData));
+
+                if (currentUser) {
+                    const db = getUsersDB();
+                    if (db[currentUser]) {
+                        db[currentUser].saveState = saveData;
+                        saveUsersDB(db);
+                    }
+                } else {
+                    localStorage.setItem('tycoon_guest_saveState', JSON.stringify(saveData));
+                }
                 setSyncState('success', '저장 완료');
             } catch (err) {
                 console.error("Save error:", err);
@@ -317,38 +537,53 @@
         function loadFromStorage() {
             setSyncState('saving', '불러오는 중...');
             try {
-                const dataStr = localStorage.getItem('tycoon_saveState');
-                if (dataStr) {
-                    const data = JSON.parse(dataStr);
-                    gameState.money = data.money || 0;
-                    gameState.totalEarned = data.totalEarned || 0;
-                    gameState.clicks = data.clicks || 0;
-                    gameState.clickPower = data.clickPower || 1;
-                    gameState.trophies = data.trophies || 0;
-                    gameState.multiplier = data.multiplier || 1;
+                let saveData = null;
 
-                    if (data.businesses) {
-                        data.businesses.forEach(bSave => {
+                if (currentUser) {
+                    const db = getUsersDB();
+                    if (db[currentUser] && db[currentUser].saveState) {
+                        saveData = db[currentUser].saveState;
+                    }
+                } else {
+                    const guestDataStr = localStorage.getItem('tycoon_guest_saveState');
+                    if (guestDataStr) {
+                        saveData = JSON.parse(guestDataStr);
+                    }
+                }
+
+                // Reset to default first
+                window.gameState = getDefaultState();
+
+                if (saveData) {
+                    gameState.money = saveData.money || 0;
+                    gameState.totalEarned = saveData.totalEarned || 0;
+                    gameState.clicks = saveData.clicks || 0;
+                    gameState.clickPower = saveData.clickPower || 1;
+                    gameState.trophies = saveData.trophies || 0;
+                    gameState.multiplier = saveData.multiplier || 1;
+
+                    if (saveData.businesses) {
+                        saveData.businesses.forEach(bSave => {
                             const target = gameState.businesses.find(b => b.id === bSave.id);
                             if (target) target.count = bSave.count;
                         });
                     }
-                    if (data.upgrades) {
-                        data.upgrades.forEach(uSave => {
+                    if (saveData.upgrades) {
+                        saveData.upgrades.forEach(uSave => {
                             const target = gameState.upgrades.find(u => u.id === uSave.id);
                             if (target) target.bought = uSave.bought;
                         });
                     }
-                    if (data.stocks) {
-                        data.stocks.forEach(sSave => {
+                    if (saveData.stocks) {
+                        saveData.stocks.forEach(sSave => {
                             const target = gameState.stocks.find(s => s.id === sSave.id);
                             if (target) target.owned = sSave.owned;
                         });
                     }
 
                     // Calculate offline earnings
-                    if (data.lastSaved) {
-                        const elapsedSec = Math.floor((Date.now() - data.lastSaved) / 1000);
+                    if (saveData.lastSaved) {
+                        const elapsedSec = Math.floor((Date.now() - saveData.lastSaved) / 1000);
                         if (elapsedSec > 10) {
                             const offlineIncome = getCPS() * elapsedSec * 0.5; // 50% efficiency
                             if (offlineIncome > 0) {
@@ -358,9 +593,9 @@
                             }
                         }
                     }
-                    setSyncState('success', '저장 완료');
+                    setSyncState('success', '불러오기 완료');
                 } else {
-                    setSyncState('success', '새 게임');
+                    setSyncState('success', '새 저장소');
                 }
                 updateUI();
             } catch (err) {
@@ -371,7 +606,7 @@
 
         window.manualSave = function() {
             saveToStorage();
-            showToast('브라우저에 성공적으로 저장되었습니다!');
+            showToast('성공적으로 저장되었습니다!');
         };
 
         function setSyncState(type, text) {
@@ -576,7 +811,8 @@
                         ` : `
                             <button onclick="buyUpgrade('${u.id}')" ${canAfford ? '' : 'disabled'}
                                 class="px-3.5 py-2 rounded-xl font-bold text-xs transition min-w-[90px]
-                                ${canAfford ? 'bg-indigo-600 hover:bg-indigo-500 text-white' : 'bg-slate-800 text-slate-500 cursor-not-allowed'}"> $${formatNum(u.cost)}
+                                ${canAfford ? 'bg-indigo-600 hover:bg-indigo-500 text-white' : 'bg-slate-800 text-slate-500 cursor-not-allowed'}">
+                                $${formatNum(u.cost)}
                             </button>
                         `}
                     </div>
@@ -687,15 +923,22 @@
 
         }, 1000);
 
-        // Auto Save to LocalStorage every 15 seconds
+        // Auto Save every 15 seconds
         setInterval(() => {
             saveToStorage();
         }, 15000);
 
-        // Load Game Data on Startup
+        // Load Last User & Game Data on Startup
         window.addEventListener('load', () => {
+            const lastUser = localStorage.getItem('tycoon_last_user');
+            if (lastUser) {
+                const db = getUsersDB();
+                if (db[lastUser]) {
+                    currentUser = lastUser;
+                }
+            }
+            updateUserUI();
             loadFromStorage();
-            updateUI();
         });
     </script>
 </body>
